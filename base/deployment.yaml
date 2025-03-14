@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ifolor-producer-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ifolor-producer-service
+  template:
+    metadata:
+      labels:
+        app: ifolor-producer-service
+    spec:
+      containers:
+      - name: ifolor-producer-service
+        image: khl40/ifolor.producer-service:latest
+        ports:
+        - containerPort: 80
