@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ifolor.ProducerService", "Ifolor.ProducerService\Ifolor.ProducerService.csproj", "{EC608448-F10B-4490-B235-42E5D3BC7A9E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC608448-F10B-4490-B235-42E5D3BC7A9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC608448-F10B-4490-B235-42E5D3BC7A9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC608448-F10B-4490-B235-42E5D3BC7A9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC608448-F10B-4490-B235-42E5D3BC7A9E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D717D9C0-61E6-4981-9F2D-1E81A991623F}
+	EndGlobalSection
+EndGlobal

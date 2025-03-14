@@ -1,0 +1,6 @@
+@Ifolor.ProducerService_HostAddress = http://localhost:5002
+
+GET {{Ifolor.ProducerService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
