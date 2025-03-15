@@ -8,6 +8,6 @@ namespace Ifolor.ProducerService.Infrastructure.Messaging
 {
     public interface IMessageProducer
     {
-        Task SendMessage();
+        Task SendMessage(RabbitMQConfig queueName, string message);
     }
 }

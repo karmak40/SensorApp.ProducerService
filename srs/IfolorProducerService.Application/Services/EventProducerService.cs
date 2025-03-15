@@ -22,12 +22,12 @@ namespace IfolorProducerService.Application.Services
         private bool _isRunning;
 
         public EventProducerService(
-        IEventGenerator eventGenerator,
-        IMessageProducer messageProducer,
-        IEventRepository eventRepository, // Добавляем в конструктор
-        IOptions<RabbitMQConfig> rabbitMQConfig,
-        ILogger<EventProducerService> logger,
-        IConfiguration configuration)
+            IEventGenerator eventGenerator,
+            IMessageProducer messageProducer,
+            IEventRepository eventRepository, // Добавляем в конструктор
+            IOptions<RabbitMQConfig> rabbitMQConfig,
+            ILogger<EventProducerService> logger,
+            IConfiguration configuration)
         {
             _eventGenerator = eventGenerator;
             _messageProducer = messageProducer;
@@ -82,8 +82,7 @@ namespace IfolorProducerService.Application.Services
 
                     // Отправляем в RabbitMQ
                     var message = JsonSerializer.Serialize(@event);
-                    //  _messageProducer.SendMessage(_rabbitMQConfig.QueueName, message);
-                    await _messageProducer.SendMessage();
+                    await _messageProducer.SendMessage(_rabbitMQConfig, message);
                     _logger.LogInformation("Published event {EventId} to RabbitMQ", @event.EventId);
 
                     await Task.Delay(_delayMs, cancellationToken);

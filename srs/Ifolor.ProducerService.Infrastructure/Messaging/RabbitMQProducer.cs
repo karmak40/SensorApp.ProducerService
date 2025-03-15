@@ -1,25 +1,62 @@
-﻿
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
+using System.Collections.Concurrent;
 using System.Text;
 
 namespace Ifolor.ProducerService.Infrastructure.Messaging
 {
     public class RabbitMQProducer : IMessageProducer
     {
-        public async Task SendMessage()
+        private IConnection _connection;
+        private RabbitMQConfig _rabbitMQConfig;
+        private ConcurrentBag<IChannel> _channelPool;
+
+        public RabbitMQProducer()
         {
-            var factory = new ConnectionFactory { HostName = "localhost", UserName = "guest", Password = "guest" };
-            using var connection = await factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            _channelPool = new ConcurrentBag<IChannel>();
+        }
 
-            await channel.QueueDeclareAsync(queue: "hello", durable: false, exclusive: false, autoDelete: false, arguments: null);
+        public async Task SendMessage(RabbitMQConfig rabbitMQConfig, string message)
+        {
+            var factory = new ConnectionFactory { 
+                HostName = rabbitMQConfig.HostName, 
+                UserName = rabbitMQConfig.Username, 
+                Password = rabbitMQConfig.Password };
 
-            const string mes = "Hello World!";
-            var body = Encoding.UTF8.GetBytes(mes);
+            if (_connection == null || !_connection.IsOpen)
+            {
+                await Connect(rabbitMQConfig);
+            }
 
-            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: "hello", body: body);
-            Console.WriteLine($" [x] Sent {mes}");
+            if (!_channelPool.TryTake(out var channel))
+            {
+                channel = await _connection.CreateChannelAsync();
+                await channel.QueueDeclareAsync(queue: _rabbitMQConfig.QueueName, durable: false, exclusive: false, autoDelete: false,
+                    arguments: null);
+            }
+            try
+            {
+                var body = Encoding.UTF8.GetBytes(message);
+                await channel.BasicPublishAsync(exchange: string.Empty, routingKey: _rabbitMQConfig.QueueName, body: body);
+                Console.WriteLine($" [x] Sent {message}");
+            }
+            finally
+            {
+                _channelPool.Add(channel);
+            }
 
+            Console.WriteLine($" [x] Sent {message}");
+        }
+
+        private async Task Connect(RabbitMQConfig rabbitMQConfig)
+        {
+            _rabbitMQConfig = rabbitMQConfig;
+            var factory = new ConnectionFactory
+            {
+                HostName = _rabbitMQConfig.HostName,
+                UserName = _rabbitMQConfig.Username,
+                Password = _rabbitMQConfig.Password
+            };
+            _connection = await factory.CreateConnectionAsync();
         }
     }
 }
