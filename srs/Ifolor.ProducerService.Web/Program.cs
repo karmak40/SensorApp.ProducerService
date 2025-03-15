@@ -2,6 +2,7 @@ using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
 using IfolorProducerService.Application.Services;
 using IfolorProducerService.Core.Generators;
+using IfolorProducerService.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -28,8 +29,9 @@ builder.Services.AddDbContextFactory<EventDbContext>((serviceProvider, options) 
 // DI
 builder.Services.AddTransient<IEventGenerator, TestEventGenerator>();
 builder.Services.AddTransient<IMessageProducer, RabbitMQProducer>();
+builder.Services.AddTransient<ISensorService,  SensorService>();
+builder.Services.AddSingleton<IControlService, ControlService>();
 builder.Services.AddTransient<IEventRepository, EventRepository>();
-builder.Services.AddSingleton<IEventProducerService, EventProducerService>();
 
 var app = builder.Build();
 

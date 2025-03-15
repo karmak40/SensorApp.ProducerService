@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace IfolorProducerService.Core.Events
 {
     public interface IEvent
@@ -11,5 +6,7 @@ namespace IfolorProducerService.Core.Events
         Guid EventId { get; }
         DateTime Timestamp { get; }
         string EventType { get; }
+        public int EventNumber { get; }
+        public string Data { get; }
     }
 }

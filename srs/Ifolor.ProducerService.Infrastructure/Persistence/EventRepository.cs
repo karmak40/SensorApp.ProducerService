@@ -1,15 +1,11 @@
-﻿using IfolorProducerService.Core.Events;
+﻿using IfolorProducerService.Application.Services;
+using IfolorProducerService.Core.Events;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Ifolor.ProducerService.Infrastructure.Persistence
 {
-    public class EventRepository: IEventRepository
+    public class EventRepository : IEventRepository
     {
         private readonly IDbContextFactory<EventDbContext> _contextFactory;
 
@@ -33,6 +29,25 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
                 context.Events.Add(entity);
                 await context.SaveChangesAsync();
             }
+        }
+
+        public async Task SaveSensorDataAsync(SensorData sensorData)
+        {
+            var entity = new SensorEventEntity
+            {
+                EventId = sensorData.EventId,
+                SensorId = sensorData.SensorId,
+                Timestamp = DateTime.UtcNow,
+                MeasurementType = sensorData.MeasurementType,
+                MeasurementValue = sensorData.MeasurementValue
+            };
+
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                context.SensorData.Add(entity);
+                await context.SaveChangesAsync();
+            }
+
         }
     }
 }

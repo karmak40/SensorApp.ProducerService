@@ -1,14 +1,11 @@
-﻿using IfolorProducerService.Core.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IfolorProducerService.Application.Services;
+using IfolorProducerService.Core.Events;
 
 namespace Ifolor.ProducerService.Infrastructure.Persistence
 {
     public interface IEventRepository
     {
         Task SaveEventAsync(IEvent @event);
+        Task SaveSensorDataAsync(SensorData sensorData);
     }
 }

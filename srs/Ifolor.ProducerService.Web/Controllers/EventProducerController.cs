@@ -1,5 +1,4 @@
-﻿using IfolorProducerService.Application.Services;
-using Microsoft.AspNetCore.Http;
+﻿using IfolorProducerService.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ifolor.ProducerService.Web.Controllers
@@ -8,35 +7,35 @@ namespace Ifolor.ProducerService.Web.Controllers
     [ApiController]
     public class EventProducerController : ControllerBase
     {
-        private readonly IEventProducerService _producerService;
+        private readonly IControlService _controlService;
         private readonly ILogger<EventProducerController> _logger;
 
         public EventProducerController(
-            IEventProducerService producerService,
+            IControlService controlService,
             ILogger<EventProducerController> logger)
         {
-            _producerService = producerService;
+            _controlService = controlService;
             _logger = logger;
         }
 
         [HttpPost("start")]
         public async Task<IActionResult> Start()
         {
-            await _producerService.StartAsync();
-            return Ok(new { Message = "Event producer started", IsRunning = _producerService.IsRunning });
+            await _controlService.AppStartAsync();
+            return Ok(new { Message = "Producer Service started", IsRunning = _controlService.IsRunning });
         }
 
         [HttpPost("stop")]
         public async Task<IActionResult> Stop()
         {
-            await _producerService.StopAsync();
-            return Ok(new { Message = "Event producer stopped", IsRunning = _producerService.IsRunning });
+            await _controlService.AppStopAsync();
+            return Ok(new { Message = "Producer Service stopped", IsRunning = _controlService.IsRunning });
         }
 
         [HttpGet("status")]
         public IActionResult GetStatus()
         {
-            return Ok(new { IsRunning = _producerService.IsRunning });
+            return Ok(new { IsRunning = _controlService.IsRunning });
         }
     }
 }
