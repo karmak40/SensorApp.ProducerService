@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ifolor-producer-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: ifolor-producer-service
@@ -16,4 +16,4 @@ spec:
       - name: ifolor-producer-service
         image: khl40/ifolor.producer-service:latest
         ports:
-        - containerPort: 80
+        - containerPort: 8080  
