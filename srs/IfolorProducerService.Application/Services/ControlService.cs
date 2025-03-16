@@ -1,10 +1,14 @@
 ﻿using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
+using IfolorProducerService.Core.Enums;
 using IfolorProducerService.Core.Models;
 using IfolorProducerService.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client.Exceptions;
+using System.Linq;
 using System.Text.Json;
+using System.Threading;
 
 namespace IfolorProducerService.Application.Services
 {
@@ -13,6 +17,7 @@ namespace IfolorProducerService.Application.Services
         private readonly ISensorService _sensorService;
         private readonly IMessageProducer _messageProducer;
         private readonly RabbitMQConfig _rabbitMQConfig;
+        private readonly ProducerPolicy _producerPolicy;
         private readonly ILogger<ControlService> _logger;
         private readonly IEventRepository _eventRepository;
         private CancellationTokenSource _cts;
@@ -22,12 +27,15 @@ namespace IfolorProducerService.Application.Services
         public ControlService(ISensorService sensorService, 
             IMessageProducer messageProducer,
             IOptions<RabbitMQConfig> rabbitMQConfig,
+            IOptions<ProducerPolicy> producerPolicy,
             ILogger<ControlService> logger,
             IEventRepository eventRepository)
         {
             _sensorService = sensorService;
             _messageProducer = messageProducer;
             _rabbitMQConfig = rabbitMQConfig.Value;
+            _producerPolicy = producerPolicy.Value;
+
             _logger = logger;
             _eventRepository = eventRepository;
         }
@@ -42,14 +50,17 @@ namespace IfolorProducerService.Application.Services
 
             _logger.LogInformation("Producer started");
 
-            _runningTasks = sensors.Select(sensor => Task.Run(() => RunAsync(sensor, token))
-                 .ContinueWith(task =>
-                 {
-                     if (task.IsFaulted)
-                     {
-                         _logger.LogError(task.Exception, "Error in sensor task");
-                     }
-                 })).ToArray();
+            _runningTasks = sensors.Select(sensor => RunAsync(sensor, token)).ToArray();
+
+            // checking are the not send messages, if yes try to send again
+            var task = RunPeriodically(async () => 
+            {
+
+                Console.WriteLine("Метод выполняется в: " + DateTime.UtcNow);
+
+                // here read unsend events and try to send them again to rabbitMQ
+
+            }, TimeSpan.FromSeconds(_producerPolicy.ResendDelayInSeconds), _cts.Token);
         }
 
         public async Task AppStopAsync()
@@ -71,38 +82,85 @@ namespace IfolorProducerService.Application.Services
         {
             while (!cancellationToken.IsCancellationRequested)
             {
+                var measurements = sensor.GenerateData();
+                var sensorData = new SensorData
+                {
+                    SensorId = sensor.SensorId,
+                    Timestamp = DateTime.UtcNow,
+                    MeasurementType = sensor.MeasurementType,
+                    MeasurementValue = measurements,
+                    EventStatus = EventStatus.Send
+                };
                 try
                 {
-                    var measurements = sensor.GenerateData();
-                    var sensorData = new SensorData
-                    {
-                        SensorId = sensor.SensorId,
-                        Timestamp = DateTime.UtcNow,
-                        MeasurementType = sensor.MeasurementType,
-                        MeasurementValue = measurements
-                    };
-
-                    // Saving to SQLite
-                    await _eventRepository.SaveSensorDataAsync(sensorData);
-                    _logger.LogInformation("Saved event {EventId} to SQLite", sensorData.EventId);
-
                     // Send to RabbitMQ
                     var message = JsonSerializer.Serialize(sensorData);
                     await _messageProducer.SendMessage(_rabbitMQConfig, message);
                     _logger.LogInformation("Published event {EventId} to RabbitMQ", sensorData.EventId);
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogInformation("Event processing was canceled for sensor {SensorId}", sensor.SensorId);
+                    break;
+                }
+                catch (BrokerUnreachableException ex)
+                {
+                    sensorData.EventStatus = EventStatus.NotSend;
+                    _logger.LogError(ex, "Error processing event: BrokerUnreachableException for sensor {SensorId}", sensor.SensorId);
+                }
+                catch (Exception ex)
+                {
+                    // handle other exceptions
+                    sensorData.EventStatus = EventStatus.NotSend;
+                    _logger.LogError(ex, "Error processing event for sensor {SensorId}", sensor.SensorId);
+                }
+                finally
+                {
+                    try
+                    {
+                        // saving to SQLite
+                        await _eventRepository.SaveSensorDataAsync(sensorData);
+                        _logger.LogInformation("Saved event {EventId} to SQLite for sensor {SensorId}", sensorData.EventId, sensor.SensorId);
+                    }
+                    catch (Exception ex)
+                    {
+                        // handle errors by saving to SQLite
+                        _logger.LogError(ex, "Error saving event to SQLite for sensor {SensorId}", sensor.SensorId);
+                    }
+                }
 
+                try
+                {
+                    // sensor delay before receiving new data
                     await Task.Delay(sensor.Interval, cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
-                    break; // expected stop
+                    // expected cancel
+                    _logger.LogInformation("Delay was canceled for sensor {SensorId}", sensor.SensorId);
+                    break;
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error processing event");
-                    await Task.Delay(5000, cancellationToken);
-                }
+                _logger.LogInformation("RunAsync completed for sensor {SensorId}", sensor.SensorId);
+
             }
         }
+
+
+        public async Task RunPeriodically(Func<Task> method, TimeSpan interval, CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+
+                var hasUnsend = await _eventRepository.HasNotSentMessages();
+
+                if (hasUnsend)
+                {
+                    await method(); 
+                }
+
+                await Task.Delay(interval, cancellationToken); // Ждем указанный интервал
+            }
+        }
+
     }
 }

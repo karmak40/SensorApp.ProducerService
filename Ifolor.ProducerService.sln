@@ -32,7 +32,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ifolor.ProducerService.Web", "srs\Ifolor.ProducerService.Web\Ifolor.ProducerService.Web.csproj", "{14600738-8248-4C27-A33F-3A56E4B7C350}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ifolor.ProducerService.Web", "srs\Ifolor.ProducerService.Web\Ifolor.ProducerService.Web.csproj", "{84A7738E-08F7-4411-9219-E772131A5CAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ifolor.ProducerService.Tests", "tests\Ifolor.ProducerService.Tests\Ifolor.ProducerService.Tests.csproj", "{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,10 +54,14 @@ Global
 		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14600738-8248-4C27-A33F-3A56E4B7C350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14600738-8248-4C27-A33F-3A56E4B7C350}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14600738-8248-4C27-A33F-3A56E4B7C350}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14600738-8248-4C27-A33F-3A56E4B7C350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84A7738E-08F7-4411-9219-E772131A5CAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84A7738E-08F7-4411-9219-E772131A5CAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84A7738E-08F7-4411-9219-E772131A5CAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84A7738E-08F7-4411-9219-E772131A5CAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,7 +71,8 @@ Global
 		{2314BC55-0CC3-4EC9-A349-F7F38A3E863A} = {58570534-9CE6-4582-9C81-1911E2163C7E}
 		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF} = {58570534-9CE6-4582-9C81-1911E2163C7E}
 		{8B5884B4-8781-4F63-987F-809B599D7F9D} = {3B147945-C90C-4E7F-B290-3E5F0893EF3B}
-		{14600738-8248-4C27-A33F-3A56E4B7C350} = {58570534-9CE6-4582-9C81-1911E2163C7E}
+		{84A7738E-08F7-4411-9219-E772131A5CAC} = {58570534-9CE6-4582-9C81-1911E2163C7E}
+		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF} = {6AB5B68A-563B-4FC3-9C1D-28BFE55CA817}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D717D9C0-61E6-4981-9F2D-1E81A991623F}

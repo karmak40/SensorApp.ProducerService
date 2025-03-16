@@ -1,34 +1,20 @@
-﻿using IfolorProducerService.Application.Services;
-using IfolorProducerService.Core.Events;
+﻿using Ifolor.ProducerService.Infrastructure.Messaging;
+using IfolorProducerService.Application.Services;
+using IfolorProducerService.Core.Enums;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace Ifolor.ProducerService.Infrastructure.Persistence
 {
     public class EventRepository : IEventRepository
     {
-        private readonly IDbContextFactory<EventDbContext> _contextFactory;
+        private readonly IDbContextFactory<ProducerDbContext> _contextFactory;
+        private readonly ProducerPolicy _producerPolicy;
 
-        public EventRepository(IDbContextFactory<EventDbContext> contextFactory)
+        public EventRepository(IDbContextFactory<ProducerDbContext> contextFactory, IOptions<ProducerPolicy> producerPolicy)
         {
             _contextFactory = contextFactory;
-        }
-
-        public async Task SaveEventAsync(IEvent @event)
-        {
-            var entity = new EventEntity
-            {
-                EventId = @event.EventId,
-                Timestamp = @event.Timestamp,
-                EventType = @event.EventType,
-                Data = JsonSerializer.Serialize(@event)
-            };
-
-            using (var context = _contextFactory.CreateDbContext())
-            {
-                context.Events.Add(entity);
-                await context.SaveChangesAsync();
-            }
+            _producerPolicy = producerPolicy.Value;
         }
 
         public async Task SaveSensorDataAsync(SensorData sensorData)
@@ -39,7 +25,8 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
                 SensorId = sensorData.SensorId,
                 Timestamp = DateTime.UtcNow,
                 MeasurementType = sensorData.MeasurementType,
-                MeasurementValue = sensorData.MeasurementValue
+                MeasurementValue = sensorData.MeasurementValue,
+                EventStatus = sensorData.EventStatus,
             };
 
             using (var context = _contextFactory.CreateDbContext())
@@ -47,7 +34,21 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
                 context.SensorData.Add(entity);
                 await context.SaveChangesAsync();
             }
+        }
 
+        public async Task<bool> HasNotSentMessages()
+        {
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                var now = DateTime.UtcNow;
+                var pastTime = now.AddSeconds(-_producerPolicy.RetryLookbackSeconds);
+
+                return await context.SensorData
+                .AnyAsync(data => data.EventStatus == EventStatus.NotSend &&
+                             data.Timestamp >= pastTime &&
+                             data.Timestamp <= now);
+
+            }
         }
     }
 }

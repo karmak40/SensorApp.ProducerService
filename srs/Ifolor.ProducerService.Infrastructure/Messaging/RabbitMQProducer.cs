@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 using System.Collections.Concurrent;
 using System.Text;
 
@@ -56,6 +57,9 @@ namespace Ifolor.ProducerService.Infrastructure.Messaging
                 UserName = _rabbitMQConfig.Username,
                 Password = _rabbitMQConfig.Password
             };
+
+            throw new BrokerUnreachableException(new Exception());
+
             _connection = await factory.CreateConnectionAsync();
         }
     }

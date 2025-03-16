@@ -1,7 +1,6 @@
-using Ifolor.ProducerService.Infrastructure.Messaging;
+﻿using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
 using IfolorProducerService.Application.Services;
-using IfolorProducerService.Core.Generators;
 using IfolorProducerService.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -14,22 +13,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configuration
-builder.Services.Configure<RabbitMQConfig>(
-    builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.Configure<SQLiteConfig>(
-    builder.Configuration.GetSection("SQLite"));
+builder.Services.Configure<RabbitMQConfig>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.Configure<ProducerPolicy>(builder.Configuration.GetSection("Producerpolicy"));
+
+builder.Services.Configure<SQLiteConfig>(builder.Configuration.GetSection("SQLite"));
 
 // SQLite
-builder.Services.AddDbContextFactory<EventDbContext>((serviceProvider, options) =>
+builder.Services.AddDbContextFactory<ProducerDbContext>((serviceProvider, options) =>
 {
-    var config = serviceProvider.GetRequiredService<IOptions<SQLiteConfig>>().Value;
-    options.UseSqlite(config.ConnectionString);
+    var sqliteConfig = serviceProvider.GetRequiredService<IOptions<SQLiteConfig>>().Value;
+    options.UseSqlite(sqliteConfig.ConnectionString);
 });
 
 // DI
-builder.Services.AddTransient<IEventGenerator, TestEventGenerator>();
 builder.Services.AddTransient<IMessageProducer, RabbitMQProducer>();
-builder.Services.AddTransient<ISensorService,  SensorService>();
+builder.Services.AddTransient<ISensorService, SensorService>();
 builder.Services.AddSingleton<IControlService, ControlService>();
 builder.Services.AddTransient<IEventRepository, EventRepository>();
 
@@ -46,7 +44,7 @@ app.MapControllers();
 // Initialize database
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<EventDbContext>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ProducerDbContext>();
     await dbContext.Database.EnsureCreatedAsync();
 }
 

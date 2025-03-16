@@ -4,6 +4,6 @@ namespace IfolorProducerService.Core.Services
 {
     public interface ISensorService
     {
-        List<Sensor> GetSensors();
+        IReadOnlyList<Sensor> GetSensors();
     }
 }
