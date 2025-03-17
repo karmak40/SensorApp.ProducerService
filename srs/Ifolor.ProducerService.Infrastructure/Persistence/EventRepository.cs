@@ -50,5 +50,22 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
 
             }
         }
+
+        public async Task<List<SensorEventEntity>> GetUnsendMessages()
+        {
+            using (var context = _contextFactory.CreateDbContext())
+            {
+                var now = DateTime.UtcNow;
+                var pastTime = now.AddSeconds(-_producerPolicy.RetryLookbackSeconds);
+
+                var sensorDataEvents = await context.SensorData
+                .Where(data => data.EventStatus == EventStatus.NotSend &&
+                             data.Timestamp >= pastTime &&
+                             data.Timestamp <= now).ToListAsync();
+
+                return sensorDataEvents;
+
+            }
+        }
     }
 }

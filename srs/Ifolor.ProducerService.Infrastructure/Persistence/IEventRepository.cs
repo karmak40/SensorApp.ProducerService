@@ -6,5 +6,6 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
     {
         Task SaveSensorDataAsync(SensorData sensorData);
         Task<bool> HasNotSentMessages();
+        Task<List<SensorEventEntity>> GetUnsendMessages();
     }
 }

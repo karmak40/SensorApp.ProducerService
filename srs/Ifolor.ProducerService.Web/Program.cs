@@ -1,5 +1,6 @@
 ﻿using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
+using IfolorProducerService.Application.Mapping;
 using IfolorProducerService.Application.Services;
 using IfolorProducerService.Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ builder.Services.AddSwaggerGen();
 // Configuration
 builder.Services.Configure<RabbitMQConfig>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.Configure<ProducerPolicy>(builder.Configuration.GetSection("Producerpolicy"));
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.Configure<SQLiteConfig>(builder.Configuration.GetSection("SQLite"));
 

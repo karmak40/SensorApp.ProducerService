@@ -1,7 +1,9 @@
-﻿using RabbitMQ.Client;
+﻿using IfolorProducerService.Application.Services;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Text.Json;
 
 namespace Ifolor.ProducerService.Infrastructure.Messaging
 {
@@ -16,8 +18,9 @@ namespace Ifolor.ProducerService.Infrastructure.Messaging
             _channelPool = new ConcurrentBag<IChannel>();
         }
 
-        public async Task SendMessage(RabbitMQConfig rabbitMQConfig, string message)
+        public async Task SendMessage(RabbitMQConfig rabbitMQConfig, SensorData sensorData)
         {
+            var message = JsonSerializer.Serialize(sensorData);
             var factory = new ConnectionFactory { 
                 HostName = rabbitMQConfig.HostName, 
                 UserName = rabbitMQConfig.Username, 

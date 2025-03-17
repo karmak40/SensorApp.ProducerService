@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IfolorProducerService.Application.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Ifolor.ProducerService.Infrastructure.Messaging
 {
     public interface IMessageProducer
     {
-        Task SendMessage(RabbitMQConfig queueName, string message);
+        Task SendMessage(RabbitMQConfig queueName, SensorData message);
     }
 }
