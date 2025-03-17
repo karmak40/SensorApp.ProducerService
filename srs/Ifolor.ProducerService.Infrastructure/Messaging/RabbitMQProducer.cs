@@ -61,8 +61,6 @@ namespace Ifolor.ProducerService.Infrastructure.Messaging
                 Password = _rabbitMQConfig.Password
             };
 
-            throw new BrokerUnreachableException(new Exception());
-
             _connection = await factory.CreateConnectionAsync();
         }
     }

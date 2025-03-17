@@ -1,40 +1,53 @@
 ﻿using IfolorProducerService.Core.Enums;
 using IfolorProducerService.Core.Models;
 using IfolorProducerService.Core.Services;
-using System;
 
 namespace IfolorProducerService.Application.Services
 {
-    public class SensorService: ISensorService
+    public class SensorService : ISensorService
     {
         private static readonly Random _random = new();
 
         public IReadOnlyList<Sensor> GetSensors()
         {
-            return new List<Sensor>
+            var sensors = new List<Sensor>
             {
-                new Sensor { SensorId = "TemperatureSensor-001", 
-                    Interval = 1000, 
-                    MeasurementType  = MeasurementType.Temperature,
-                    GenerateData = () => GenerateSensorData(100, 130) 
-                },
-                //new Sensor { SensorId = "PressureSensor-001", 
-                //    Interval = 2000, 
-                //    MeasurementType = MeasurementType.Pressure,
-                //    GenerateData = () => GenerateSensorData(1000, 1300) },
-            }.AsReadOnly();
+                CreateSensor("TemperatureSensor-001", 1000, MeasurementType.Temperature, 100, 130),
+                CreateSensor("PressureSensor-001", 2000, MeasurementType.Pressure, 1000, 1300)
+            };
+
+            if (!sensors.Any())
+            {
+                throw new InvalidOperationException("No sensors configured.");
+            }
+
+            return sensors.AsReadOnly();
         }
 
-        private static double GenerateTemperatureData()
+        private Sensor CreateSensor(string sensorId, int interval, MeasurementType measurementType, int minValue, int maxValue)
         {
-            var random = new Random();
-            return random.Next(100, 130); // temp from 0 to 130
-        }
+            if (string.IsNullOrEmpty(sensorId))
+            {
+                throw new ArgumentException("Sensor ID cannot be null or empty.", nameof(sensorId));
+            }
 
-        private static double GeneratePressureData()
-        {
-            var random = new Random();
-            return random.Next(1000, 1300); // Pressure from 1000 to 1300
+            if (interval <= 0)
+            {
+                throw new ArgumentException("Interval must be greater than 0.", nameof(interval));
+            }
+
+            if (minValue >= maxValue)
+            {
+                throw new ArgumentException("minValue must be less than maxValue.", nameof(minValue));
+            }
+
+            return new Sensor
+            {
+                SensorId = sensorId,
+                Interval = interval,
+                MeasurementType = measurementType,
+                GenerateData = () => GenerateSensorData(minValue, maxValue)
+            };
         }
 
         private double GenerateSensorData(int minValue, int maxValue)

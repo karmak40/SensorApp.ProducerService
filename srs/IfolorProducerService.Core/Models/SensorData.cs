@@ -8,7 +8,7 @@ namespace IfolorProducerService.Application.Services
         public DateTime Timestamp { get; set; }
         public double MeasurementValue { get; set; }
         public MeasurementType MeasurementType { get; set; }
-        public Guid EventId { get; set; } = Guid.NewGuid();
+        public Guid EventId { get; set; } // = Guid.NewGuid();
         public EventStatus EventStatus { get; set; }
     }
 }

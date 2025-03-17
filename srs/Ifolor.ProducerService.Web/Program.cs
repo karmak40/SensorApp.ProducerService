@@ -1,7 +1,9 @@
 ﻿using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
+using IfolorProducerService.Application.Generator;
 using IfolorProducerService.Application.Mapping;
 using IfolorProducerService.Application.Services;
+using IfolorProducerService.Core.Generator;
 using IfolorProducerService.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -33,6 +35,9 @@ builder.Services.AddTransient<IMessageProducer, RabbitMQProducer>();
 builder.Services.AddTransient<ISensorService, SensorService>();
 builder.Services.AddSingleton<IControlService, ControlService>();
 builder.Services.AddTransient<IEventRepository, EventRepository>();
+builder.Services.AddTransient<ISendService, SendService>();
+builder.Services.AddTransient<IResendService, ResendService>();
+builder.Services.AddTransient<ISensorDataGenerator, SensorDataGenerator>();
 
 var app = builder.Build();
 

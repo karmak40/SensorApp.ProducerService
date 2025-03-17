@@ -1,47 +1,50 @@
 ﻿using AutoMapper;
 using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
-using IfolorProducerService.Core.Enums;
+using IfolorProducerService.Core.Generator;
 using IfolorProducerService.Core.Models;
 using IfolorProducerService.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RabbitMQ.Client.Exceptions;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
+using System.Collections.Concurrent;
 
 namespace IfolorProducerService.Application.Services
 {
     public class ControlService : IControlService
     {
+        private BlockingCollection<Sensor> _sensorQueue = new BlockingCollection<Sensor>();
+
+        private readonly ISendService _sendService;
+        private readonly IResendService _resendService;
         private readonly ISensorService _sensorService;
-        private readonly IMessageProducer _messageProducer;
-        private readonly RabbitMQConfig _rabbitMQConfig;
+        private readonly IEventRepository _eventRepository;
+        private readonly ISensorDataGenerator _sensorDataGenerator;
+
         private readonly ProducerPolicy _producerPolicy;
         private readonly ILogger<ControlService> _logger;
-        private readonly IEventRepository _eventRepository;
+
         private CancellationTokenSource _cts;
         private bool _isRunning;
         private Task[] _runningTasks;
-        private readonly IMapper _mapper;
 
-        public ControlService(ISensorService sensorService, 
+        public ControlService(
+            ISendService sendService,
+            IResendService resendService,
+            ISensorService sensorService, 
             IMessageProducer messageProducer,
-            IOptions<RabbitMQConfig> rabbitMQConfig,
+            ISensorDataGenerator sensorDataGenerator,
             IOptions<ProducerPolicy> producerPolicy,
             ILogger<ControlService> logger,
             IEventRepository eventRepository,
             IMapper mapper)
         {
+            _sendService = sendService;
+            _resendService = resendService;
             _sensorService = sensorService;
-            _messageProducer = messageProducer;
-            _rabbitMQConfig = rabbitMQConfig.Value;
             _producerPolicy = producerPolicy.Value;
-
+            _sensorDataGenerator = sensorDataGenerator;
             _logger = logger;
             _eventRepository = eventRepository;
-            _mapper = mapper;
         }
         public bool IsRunning => _isRunning;
 
@@ -54,14 +57,7 @@ namespace IfolorProducerService.Application.Services
 
             _logger.LogInformation("Producer started");
 
-            _runningTasks = sensors.Select(sensor => RunAsync(sensor, token)).ToArray();
-
-            // checking are the not send messages, if yes try to send again
-            var task = RunPeriodically(async () => 
-            {
-                await ResendEvents();
-                // here read unsend events and try to send them again to rabbitMQ
-            }, TimeSpan.FromSeconds(_producerPolicy.ResendDelayInSeconds), _cts.Token);
+            _ = Task.Run(() => ProcessSensorsAsync(sensors, 5, _cts.Token), _cts.Token);
         }
 
         public async Task AppStopAsync()
@@ -73,29 +69,48 @@ namespace IfolorProducerService.Application.Services
             }
 
             _cts.Cancel();
-            await Task.WhenAll(_runningTasks);
 
             _isRunning = false;
             _logger.LogInformation("Producer stopped");
+        }
+
+
+
+        public async Task ProcessSensorsAsync(IEnumerable<Sensor> sensors, int numberOfWorkers, CancellationToken token)
+        {
+            _sensorQueue = new BlockingCollection<Sensor>();
+            foreach (var sensor in sensors)
+            {
+                _sensorQueue.Add(sensor, token);
+            }
+            _sensorQueue.CompleteAdding();
+
+            // Start worker tasks
+            var workers = Enumerable.Range(0, numberOfWorkers)
+                                    .Select(_ => Task.Run(() => ProcessSensorAsync(token), token))
+                                    .ToArray();
+
+            await Task.WhenAll(workers); // Wait for all workers to complete
+        }
+
+        private async Task ProcessSensorAsync(CancellationToken token)
+        {
+            foreach (var sensor in _sensorQueue.GetConsumingEnumerable(token))
+            {
+                await RunAsync(sensor, token);
+            }
         }
 
         private async Task RunAsync(Sensor sensor, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var measurements = sensor.GenerateData();
-                var sensorData = new SensorData
-                {
-                    SensorId = sensor.SensorId,
-                    Timestamp = DateTime.UtcNow,
-                    MeasurementType = sensor.MeasurementType,
-                    MeasurementValue = measurements,
-                    EventStatus = EventStatus.Send
-                };
-                
+                cancellationToken.ThrowIfCancellationRequested();
+                SensorData sensorData = _sensorDataGenerator.GenerateData(sensor);
+
                 try
                 {
-                    await SendToMessageBroker(sensorData);
+                    await _sendService.SendToMessageBroker(sensorData);
                 }
                 catch (OperationCanceledException)
                 {
@@ -122,53 +137,5 @@ namespace IfolorProducerService.Application.Services
                 await Task.Delay(sensor.Interval, cancellationToken);
             }
         }
-
-        private async Task SendToMessageBroker(SensorData sensorData)
-        {
-            try
-            {
-                // Send to RabbitMQ
-                await _messageProducer.SendMessage(_rabbitMQConfig, sensorData);
-                _logger.LogInformation("Published event {EventId} to RabbitMQ", sensorData.EventId);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("Event processing was canceled for sensor {SensorId}", sensorData.SensorId);
-            }
-            catch (BrokerUnreachableException ex)
-            {
-                sensorData.EventStatus = EventStatus.NotSend;
-                _logger.LogError(ex, "Error processing event: BrokerUnreachableException for sensor {SensorId}", sensorData.SensorId);
-            }
-            catch (Exception ex)
-            {
-                sensorData.EventStatus = EventStatus.NotSend;
-                _logger.LogError(ex, "Error processing event for sensor {SensorId}", sensorData.SensorId);
-            }
-        }
-
-        public async Task RunPeriodically(Func<Task> method, TimeSpan interval, CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var hasUnsend = await _eventRepository.HasNotSentMessages();
-
-                if (hasUnsend)
-                {
-                    await method(); 
-                }
-
-                await Task.Delay(interval, cancellationToken); // Ждем указанный интервал
-            }
-        }
-
-        public async Task ResendEvents()
-        {
-            var unsendEvents = await _eventRepository.GetUnsendMessages();
-            var eventDataList = _mapper.Map<List<SensorEventEntity>, List<SensorData>>(unsendEvents);
-
-            eventDataList.ForEach(async ev => await SendToMessageBroker(ev));
-        }
-
     }
 }

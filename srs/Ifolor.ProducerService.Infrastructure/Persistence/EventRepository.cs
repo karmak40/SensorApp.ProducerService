@@ -2,6 +2,7 @@
 using IfolorProducerService.Application.Services;
 using IfolorProducerService.Core.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ifolor.ProducerService.Infrastructure.Persistence
@@ -10,11 +11,19 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
     {
         private readonly IDbContextFactory<ProducerDbContext> _contextFactory;
         private readonly ProducerPolicy _producerPolicy;
+        private readonly ILogger<EventRepository> _logger;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public EventRepository(IDbContextFactory<ProducerDbContext> contextFactory, IOptions<ProducerPolicy> producerPolicy)
+        public EventRepository(
+            IDbContextFactory<ProducerDbContext> contextFactory, 
+            IOptions<ProducerPolicy> producerPolicy,
+            ILogger<EventRepository> logger,
+            IDateTimeProvider dateTimeProvider)
         {
             _contextFactory = contextFactory;
             _producerPolicy = producerPolicy.Value;
+            _logger = logger;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task SaveSensorDataAsync(SensorData sensorData)
@@ -29,10 +38,23 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
                 EventStatus = sensorData.EventStatus,
             };
 
-            using (var context = _contextFactory.CreateDbContext())
+            try
             {
-                context.SensorData.Add(entity);
-                await context.SaveChangesAsync();
+                using (var context = _contextFactory.CreateDbContext())
+                {
+                    context.SensorData.Add(entity);
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Error saving sensor data for sensor {SensorId}", sensorData.SensorId);
+                throw;
+            }
+            catch (NullReferenceException ex) 
+            {
+                _logger.LogError(ex, "Error saving sensor data for sensor {SensorId} argument is null", sensorData.SensorId);
+                throw;
             }
         }
 
@@ -40,14 +62,14 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
         {
             using (var context = _contextFactory.CreateDbContext())
             {
-                var now = DateTime.UtcNow;
+                var now = _dateTimeProvider.UtcNow;
                 var pastTime = now.AddSeconds(-_producerPolicy.RetryLookbackSeconds);
 
                 return await context.SensorData
-                .AnyAsync(data => data.EventStatus == EventStatus.NotSend &&
-                             data.Timestamp >= pastTime &&
-                             data.Timestamp <= now);
-
+                    .AsNoTracking()
+                    .AnyAsync(data => data.EventStatus == EventStatus.NotSend &&
+                                      data.Timestamp >= pastTime &&
+                                      data.Timestamp <= now);
             }
         }
 
@@ -55,16 +77,15 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
         {
             using (var context = _contextFactory.CreateDbContext())
             {
-                var now = DateTime.UtcNow;
+                var now = _dateTimeProvider.UtcNow;
                 var pastTime = now.AddSeconds(-_producerPolicy.RetryLookbackSeconds);
 
-                var sensorDataEvents = await context.SensorData
-                .Where(data => data.EventStatus == EventStatus.NotSend &&
-                             data.Timestamp >= pastTime &&
-                             data.Timestamp <= now).ToListAsync();
-
-                return sensorDataEvents;
-
+                return await context.SensorData
+                    .AsNoTracking()
+                    .Where(data => data.EventStatus == EventStatus.NotSend &&
+                                   data.Timestamp >= pastTime &&
+                                   data.Timestamp <= now)
+                    .ToListAsync();
             }
         }
     }
