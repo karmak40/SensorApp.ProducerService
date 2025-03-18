@@ -40,11 +40,9 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
 
             try
             {
-                using (var context = _contextFactory.CreateDbContext())
-                {
-                    context.SensorData.Add(entity);
-                    await context.SaveChangesAsync();
-                }
+                using var context = _contextFactory.CreateDbContext();
+                context.SensorData.Add(entity);
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {

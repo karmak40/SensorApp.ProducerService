@@ -44,7 +44,6 @@ namespace Ifolor.ProducerService.Tests
             return new ProducerDbContext(options);
         }
 
-
         [Fact]
         public async Task SaveSensorDataAsync_SavesDataSuccessfully()
         {

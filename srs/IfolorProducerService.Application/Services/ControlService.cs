@@ -25,7 +25,6 @@ namespace IfolorProducerService.Application.Services
 
         private CancellationTokenSource _cts;
         private bool _isRunning;
-        private Task[] _runningTasks;
 
         public ControlService(
             ISendService sendService,
@@ -48,7 +47,7 @@ namespace IfolorProducerService.Application.Services
         }
         public bool IsRunning => _isRunning;
 
-        public async Task AppStartAsync()
+        public void AppStartAsync()
         {
             var sensors = _sensorService.GetSensors();
             _cts = new CancellationTokenSource();
@@ -60,7 +59,7 @@ namespace IfolorProducerService.Application.Services
             _ = Task.Run(() => ProcessSensorsAsync(sensors, 5, _cts.Token), _cts.Token);
         }
 
-        public async Task AppStopAsync()
+        public void AppStopAsync()
         {
             if (!_isRunning)
             {
@@ -90,7 +89,7 @@ namespace IfolorProducerService.Application.Services
                                     .Select(_ => Task.Run(() => ProcessSensorAsync(token), token))
                                     .ToArray();
 
-            await Task.WhenAll(workers); // Wait for all workers to complete
+            await Task.WhenAll(workers);
         }
 
         private async Task ProcessSensorAsync(CancellationToken token)
@@ -136,6 +135,11 @@ namespace IfolorProducerService.Application.Services
                 // sensor delay before receiving new data
                 await Task.Delay(sensor.Interval, cancellationToken);
             }
+        }
+
+        public BlockingCollection<Sensor> GetSensorQueue()
+        {
+            return _sensorQueue;
         }
     }
 }

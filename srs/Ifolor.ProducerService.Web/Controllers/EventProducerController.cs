@@ -19,23 +19,23 @@ namespace Ifolor.ProducerService.Web.Controllers
         }
 
         [HttpPost("start")]
-        public async Task<IActionResult> Start()
+        public IActionResult Start()
         {
-            await _controlService.AppStartAsync();
-            return Ok(new { Message = "Producer Service started", IsRunning = _controlService.IsRunning });
+            _controlService.AppStartAsync();
+            return Ok(new { Message = "Producer Service started", _controlService.IsRunning });
         }
 
         [HttpPost("stop")]
-        public async Task<IActionResult> Stop()
+        public IActionResult Stop()
         {
-            await _controlService.AppStopAsync();
-            return Ok(new { Message = "Producer Service stopped", IsRunning = _controlService.IsRunning });
+            _controlService.AppStopAsync();
+            return Ok(new { Message = "Producer Service stopped", _controlService.IsRunning });
         }
 
         [HttpGet("status")]
         public IActionResult GetStatus()
         {
-            return Ok(new { IsRunning = _controlService.IsRunning });
+            return Ok(new { _controlService.IsRunning });
         }
     }
 }

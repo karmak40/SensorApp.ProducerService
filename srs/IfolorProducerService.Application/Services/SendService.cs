@@ -13,17 +13,14 @@ namespace IfolorProducerService.Application.Services
     public class SendService: ISendService
     {
         private readonly IMessageProducer _messageProducer;
-        private readonly RabbitMQConfig _rabbitMQConfig;
         private readonly ILogger<SendService> _logger;
 
         public SendService(
             IMessageProducer messageProducer,
-            IOptions<RabbitMQConfig> rabbitMQConfig,
             ILogger<SendService> logger
         )
         {
             _messageProducer = messageProducer;
-            _rabbitMQConfig = rabbitMQConfig.Value;
             _logger = logger;
         }
 
@@ -37,7 +34,7 @@ namespace IfolorProducerService.Application.Services
             {
                 try
                 {
-                    await _messageProducer.SendMessage(_rabbitMQConfig, sensorData);
+                    await _messageProducer.SendMessage(sensorData);
                     _logger.LogInformation("Published event {EventId} to RabbitMQ", sensorData.EventId);
                     return; // Exit on success
                 }

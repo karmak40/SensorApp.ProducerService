@@ -25,7 +25,7 @@ namespace Ifolor.ProducerService.Tests
             var mockOptions = new Mock<IOptions<RabbitMQConfig>>();
             mockOptions.Setup(o => o.Value).Returns(_rabbitMQConfig);
 
-            _sendService = new SendService(_mockMessageProducer.Object, mockOptions.Object, _mockLogger.Object);
+            _sendService = new SendService(_mockMessageProducer.Object, _mockLogger.Object);
         }
 
         [Fact]
@@ -34,14 +34,14 @@ namespace Ifolor.ProducerService.Tests
             // Arrange
             var sensorData = new SensorData { EventId = Guid.NewGuid(), SensorId = "sensor-1" };
             _mockMessageProducer
-                .Setup(m => m.SendMessage(_rabbitMQConfig, sensorData))
+                .Setup(m => m.SendMessage(sensorData))
                 .Returns(Task.CompletedTask);
 
             // Act
             await _sendService.SendToMessageBroker(sensorData);
 
             // Assert
-            _mockMessageProducer.Verify(m => m.SendMessage(_rabbitMQConfig, sensorData), Times.Once);
+            _mockMessageProducer.Verify(m => m.SendMessage(sensorData), Times.Once);
         }
 
 
@@ -51,7 +51,7 @@ namespace Ifolor.ProducerService.Tests
             // Arrange
             var sensorData = new SensorData { EventId = Guid.NewGuid(), SensorId = "sensor-1" };
             _mockMessageProducer
-                .SetupSequence(m => m.SendMessage(_rabbitMQConfig, sensorData))
+                .SetupSequence(m => m.SendMessage(sensorData))
                 .Throws(new BrokerUnreachableException(new Exception("Broker unreachable")))
                 .Throws(new BrokerUnreachableException(new Exception("Broker unreachable")))
                 .Returns(Task.CompletedTask);
@@ -60,7 +60,7 @@ namespace Ifolor.ProducerService.Tests
             await _sendService.SendToMessageBroker(sensorData);
 
             // Assert
-            _mockMessageProducer.Verify(m => m.SendMessage(_rabbitMQConfig, sensorData), Times.Exactly(3));
+            _mockMessageProducer.Verify(m => m.SendMessage(sensorData), Times.Exactly(3));
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace Ifolor.ProducerService.Tests
             // Arrange
             var sensorData = new SensorData { EventId = Guid.NewGuid(), SensorId = "sensor-1" };
             _mockMessageProducer
-                .Setup(m => m.SendMessage(_rabbitMQConfig, sensorData))
+                .Setup(m => m.SendMessage(sensorData))
                 .Throws(new OperationCanceledException());
 
             // Act & Assert
@@ -83,7 +83,7 @@ namespace Ifolor.ProducerService.Tests
             var sensorData = new SensorData { EventId = Guid.NewGuid(), SensorId = "sensor-1" };
             var exception = new Exception("Unexpected error");
             _mockMessageProducer
-                .Setup(m => m.SendMessage(_rabbitMQConfig, sensorData))
+                .Setup(m => m.SendMessage(sensorData))
                 .Throws(exception);
 
             // Act & Assert

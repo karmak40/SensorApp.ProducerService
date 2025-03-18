@@ -1,9 +1,13 @@
-﻿namespace IfolorProducerService.Core.Services
+﻿using IfolorProducerService.Core.Models;
+using System.Collections.Concurrent;
+
+namespace IfolorProducerService.Core.Services
 {
     public interface IControlService
     {
         bool IsRunning { get; }
-        public Task AppStartAsync();
-        public Task AppStopAsync();
+        public void AppStartAsync();
+        public void AppStopAsync();
+        public BlockingCollection<Sensor> GetSensorQueue();
     }
 }

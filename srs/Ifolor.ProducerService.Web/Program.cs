@@ -38,6 +38,7 @@ builder.Services.AddTransient<IEventRepository, EventRepository>();
 builder.Services.AddTransient<ISendService, SendService>();
 builder.Services.AddTransient<IResendService, ResendService>();
 builder.Services.AddTransient<ISensorDataGenerator, SensorDataGenerator>();
+builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
 var app = builder.Build();
 
