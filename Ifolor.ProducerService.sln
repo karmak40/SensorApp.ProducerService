@@ -37,6 +37,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Core
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Application", "srs\Ifolor.ProducerService.Application\Ifolor.ProducerService.Application.csproj", "{492AE636-741E-44C6-9615-3EA5161A82F7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prometheus-config", "prometheus-config", "{D3ADE1BB-B584-4337-8436-5C21FD9FEA27}"
+	ProjectSection(SolutionItems) = preProject
+		prometheus-config\prometheus.yml = prometheus-config\prometheus.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

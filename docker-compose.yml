@@ -17,11 +17,13 @@ services:
     image: khl40/ifolor.producer-service:latest
     container_name: producer-service
     ports:
-      - "5001:8080" # Map host port 5001 to container port 8080
+      - "5001:80"
     depends_on:
       - rabbitmq
     environment:
       - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
     networks:
       - app-network
 
@@ -32,8 +34,10 @@ services:
       - rabbitmq
     environment:
       - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
     ports:
-      - "5000:80" # Expose the consumer service metrics endpoint
+      - "9090:9090" # Metrics endpoint
     networks:
       - app-network
 
@@ -41,13 +45,23 @@ services:
     image: prom/prometheus
     container_name: prometheus
     ports:
-      - "9090:9090" # Prometheus web UI
+      - "9091:9090" # Prometheus UI on 9091 to avoid conflict
     volumes:
       - ./prometheus-config:/etc/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     depends_on:
       - consumer-service
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000" # Grafana web UI
+    depends_on:
+      - prometheus
     networks:
       - app-network
 

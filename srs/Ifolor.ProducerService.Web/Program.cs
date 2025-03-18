@@ -10,6 +10,9 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Bind environment variables to the RabbitMQConfig class
+builder.Configuration.AddEnvironmentVariables(prefix: "RabbitMQ__");
+
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -40,6 +43,7 @@ builder.Services.AddTransient<IResendService, ResendService>();
 builder.Services.AddTransient<ISensorDataGenerator, SensorDataGenerator>();
 builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -56,5 +60,8 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ProducerDbContext>();
     await dbContext.Database.EnsureCreatedAsync();
 }
+
+var rabbitMQConfig = app.Services.GetRequiredService<IOptions<RabbitMQConfig>>().Value;
+Console.WriteLine($"RabbitMQ Host: {rabbitMQConfig.HostName}");
 
 await app.RunAsync();
