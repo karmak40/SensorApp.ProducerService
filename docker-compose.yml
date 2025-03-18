@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # RabbitMQ AMQP port
+      - "15672:15672" # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - app-network
+
+  producer-service:
+    image: khl40/ifolor.producer-service:latest
+    container_name: producer-service
+    ports:
+      - "5001:8080" # Map host port 5001 to container port 8080
+    depends_on:
+      - rabbitmq
+    environment:
+      - RabbitMQ__HostName=rabbitmq
+    networks:
+      - app-network
+
+  consumer-service:
+    image: khl40/ifolor.consumer-service:latest
+    container_name: consumer-service
+    depends_on:
+      - rabbitmq
+    environment:
+      - RabbitMQ__HostName=rabbitmq
+    ports:
+      - "5000:80" # Expose the consumer service metrics endpoint
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090" # Prometheus web UI
+    volumes:
+      - ./prometheus-config:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    depends_on:
+      - consumer-service
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
