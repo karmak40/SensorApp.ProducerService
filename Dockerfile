@@ -13,9 +13,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["srs/Ifolor.ProducerService.Web/Ifolor.ProducerService.Web.csproj", "srs/Ifolor.ProducerService.Web/"]
-COPY ["srs/IfolorProducerService.Application/IfolorProducerService.Application.csproj", "srs/IfolorProducerService.Application/"]
+COPY ["srs/Ifolor.ProducerService.Application/Ifolor.ProducerService.Application.csproj", "srs/Ifolor.ProducerService.Application/"]
 COPY ["srs/Ifolor.ProducerService.Infrastructure/Ifolor.ProducerService.Infrastructure.csproj", "srs/Ifolor.ProducerService.Infrastructure/"]
-COPY ["srs/IfolorProducerService.Core/IfolorProducerService.Core.csproj", "srs/IfolorProducerService.Core/"]
+COPY ["srs/Ifolor.ProducerService.Core/Ifolor.ProducerService.Core.csproj", "srs/Ifolor.ProducerService.Core/"]
 RUN dotnet restore "./srs/Ifolor.ProducerService.Web/Ifolor.ProducerService.Web.csproj"
 COPY . .
 WORKDIR "/src/srs/Ifolor.ProducerService.Web"

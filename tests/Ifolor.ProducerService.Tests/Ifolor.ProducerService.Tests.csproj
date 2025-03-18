@@ -22,8 +22,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\srs\Ifolor.ProducerService.Infrastructure\Ifolor.ProducerService.Infrastructure.csproj" />
     <ProjectReference Include="..\..\srs\Ifolor.ProducerService.Web\Ifolor.ProducerService.Web.csproj" />
-    <ProjectReference Include="..\..\srs\IfolorProducerService.Application\IfolorProducerService.Application.csproj" />
-    <ProjectReference Include="..\..\srs\IfolorProducerService.Core\IfolorProducerService.Core.csproj" />
+    <ProjectReference Include="..\..\srs\Ifolor.ProducerService.Application\Ifolor.ProducerService.Application.csproj" />
+    <ProjectReference Include="..\..\srs\Ifolor.ProducerService.Core\Ifolor.ProducerService.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

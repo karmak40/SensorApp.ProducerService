@@ -7,11 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{58570534-9CE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6AB5B68A-563B-4FC3-9C1D-28BFE55CA817}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IfolorProducerService.Core", "srs\IfolorProducerService.Core\IfolorProducerService.Core.csproj", "{071FCDF6-45B1-4903-A843-D65C93D391E7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Infrastructure", "srs\Ifolor.ProducerService.Infrastructure\Ifolor.ProducerService.Infrastructure.csproj", "{2314BC55-0CC3-4EC9-A349-F7F38A3E863A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IfolorProducerService.Application", "srs\IfolorProducerService.Application\IfolorProducerService.Application.csproj", "{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base", "base", "{FC0FFBD8-0ACB-4F0F-8672-3C5F644E13B0}"
 	ProjectSection(SolutionItems) = preProject
@@ -32,9 +28,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ifolor.ProducerService.Web", "srs\Ifolor.ProducerService.Web\Ifolor.ProducerService.Web.csproj", "{84A7738E-08F7-4411-9219-E772131A5CAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Web", "srs\Ifolor.ProducerService.Web\Ifolor.ProducerService.Web.csproj", "{84A7738E-08F7-4411-9219-E772131A5CAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ifolor.ProducerService.Tests", "tests\Ifolor.ProducerService.Tests\Ifolor.ProducerService.Tests.csproj", "{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Tests", "tests\Ifolor.ProducerService.Tests\Ifolor.ProducerService.Tests.csproj", "{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Core", "srs\Ifolor.ProducerService.Core\Ifolor.ProducerService.Core.csproj", "{5F324557-42CD-4754-AF5C-2B6BFAC0044E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Application", "srs\Ifolor.ProducerService.Application\Ifolor.ProducerService.Application.csproj", "{492AE636-741E-44C6-9615-3EA5161A82F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,18 +42,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{071FCDF6-45B1-4903-A843-D65C93D391E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{071FCDF6-45B1-4903-A843-D65C93D391E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{071FCDF6-45B1-4903-A843-D65C93D391E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{071FCDF6-45B1-4903-A843-D65C93D391E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2314BC55-0CC3-4EC9-A349-F7F38A3E863A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2314BC55-0CC3-4EC9-A349-F7F38A3E863A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2314BC55-0CC3-4EC9-A349-F7F38A3E863A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2314BC55-0CC3-4EC9-A349-F7F38A3E863A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{84A7738E-08F7-4411-9219-E772131A5CAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{84A7738E-08F7-4411-9219-E772131A5CAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84A7738E-08F7-4411-9219-E772131A5CAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -62,17 +54,25 @@ Global
 		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F324557-42CD-4754-AF5C-2B6BFAC0044E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F324557-42CD-4754-AF5C-2B6BFAC0044E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F324557-42CD-4754-AF5C-2B6BFAC0044E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F324557-42CD-4754-AF5C-2B6BFAC0044E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{492AE636-741E-44C6-9615-3EA5161A82F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{492AE636-741E-44C6-9615-3EA5161A82F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{492AE636-741E-44C6-9615-3EA5161A82F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{492AE636-741E-44C6-9615-3EA5161A82F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{071FCDF6-45B1-4903-A843-D65C93D391E7} = {58570534-9CE6-4582-9C81-1911E2163C7E}
 		{2314BC55-0CC3-4EC9-A349-F7F38A3E863A} = {58570534-9CE6-4582-9C81-1911E2163C7E}
-		{111D61D4-F7E3-40EC-B3A5-72D7160FBCDF} = {58570534-9CE6-4582-9C81-1911E2163C7E}
 		{8B5884B4-8781-4F63-987F-809B599D7F9D} = {3B147945-C90C-4E7F-B290-3E5F0893EF3B}
 		{84A7738E-08F7-4411-9219-E772131A5CAC} = {58570534-9CE6-4582-9C81-1911E2163C7E}
 		{B4A2C8B0-8E4D-463C-B623-71EFEE090DDF} = {6AB5B68A-563B-4FC3-9C1D-28BFE55CA817}
+		{5F324557-42CD-4754-AF5C-2B6BFAC0044E} = {58570534-9CE6-4582-9C81-1911E2163C7E}
+		{492AE636-741E-44C6-9615-3EA5161A82F7} = {58570534-9CE6-4582-9C81-1911E2163C7E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D717D9C0-61E6-4981-9F2D-1E81A991623F}

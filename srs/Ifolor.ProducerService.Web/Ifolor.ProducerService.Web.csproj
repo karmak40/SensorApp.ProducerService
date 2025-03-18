@@ -20,8 +20,11 @@
 	<PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.1" />
   </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\IfolorProducerService.Application\IfolorProducerService.Application.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ifolor.ProducerService.Application\Ifolor.ProducerService.Application.csproj" />
+    <ProjectReference Include="..\Ifolor.ProducerService.Core\Ifolor.ProducerService.Core.csproj" />
+    <ProjectReference Include="..\Ifolor.ProducerService.Infrastructure\Ifolor.ProducerService.Infrastructure.csproj" />
+  </ItemGroup>
+
 
 </Project>

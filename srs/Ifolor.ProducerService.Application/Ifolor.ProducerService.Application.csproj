@@ -20,8 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ifolor.ProducerService.Core\Ifolor.ProducerService.Core.csproj" />
     <ProjectReference Include="..\Ifolor.ProducerService.Infrastructure\Ifolor.ProducerService.Infrastructure.csproj" />
-    <ProjectReference Include="..\IfolorProducerService.Core\IfolorProducerService.Core.csproj" />
   </ItemGroup>
 
+	
 </Project>
