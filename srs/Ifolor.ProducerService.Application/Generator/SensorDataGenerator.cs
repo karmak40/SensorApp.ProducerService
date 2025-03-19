@@ -7,6 +7,11 @@ namespace IfolorProducerService.Application.Generator
 {
     public class SensorDataGenerator : ISensorDataGenerator
     {
+        /// <summary>
+        /// Returning Data from the Sernsor
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <returns></returns>
         public SensorData GenerateData(Sensor sensor)
         {
             var measurements = sensor.GenerateData();
