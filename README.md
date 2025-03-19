@@ -14,7 +14,8 @@ Once completed, the following services will be available:
 - **Producer Service**: [http://localhost:5001/](http://localhost:5001/)
 - **Consumer Service**: [http://localhost:9090/](http://localhost:9090/)
 - **Prometheus**: [http://localhost:9091/](http://localhost:9091/)
-- **Grafana**: [http://localhost:3000/](http://localhost:3000/)
+- **Grafana**: [http://localhost:3000/](http://localhost:3000/)  
+  (User: `admin`, Password: `admin`)
 
 To Start go to  
 
