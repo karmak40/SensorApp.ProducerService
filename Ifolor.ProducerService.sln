@@ -9,13 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6AB5B68A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ifolor.ProducerService.Infrastructure", "srs\Ifolor.ProducerService.Infrastructure\Ifolor.ProducerService.Infrastructure.csproj", "{2314BC55-0CC3-4EC9-A349-F7F38A3E863A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base", "base", "{FC0FFBD8-0ACB-4F0F-8672-3C5F644E13B0}"
-	ProjectSection(SolutionItems) = preProject
-		base\deployment.yaml = base\deployment.yaml
-		base\ingress.yaml = base\ingress.yaml
-		base\service.yaml = base\service.yaml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{3B147945-C90C-4E7F-B290-3E5F0893EF3B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8B5884B4-8781-4F63-987F-809B599D7F9D}"

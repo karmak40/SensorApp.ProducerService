@@ -15,12 +15,14 @@ services:
 
   producer-service:
     image: khl40/ifolor.producer-service:latest
+    pull_policy: always
     container_name: producer-service
     ports:
       - "5001:80"
     depends_on:
       - rabbitmq
     environment:
+      - ASPNETCORE_URLS=http://+:80
       - RabbitMQ__HostName=rabbitmq
       - RabbitMQ__UserName=guest
       - RabbitMQ__Password=guest
@@ -29,6 +31,7 @@ services:
 
   consumer-service:
     image: khl40/ifolor.consumer-service:latest
+    pull_policy: always
     container_name: consumer-service
     depends_on:
       - rabbitmq
