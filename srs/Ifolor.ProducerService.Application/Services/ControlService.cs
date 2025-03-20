@@ -47,7 +47,7 @@ namespace IfolorProducerService.Application.Services
         }
         public bool IsRunning => _isRunning;
 
-        public void AppStartAsync()
+        public async Task AppStartAsync()
         {
             var sensors = _sensorService.GetSensors();
             _cts = new CancellationTokenSource();
@@ -56,10 +56,18 @@ namespace IfolorProducerService.Application.Services
 
             _logger.LogInformation("Producer started");
 
-            _ = Task.Run(() => ProcessSensorsAsync(sensors, 5, _cts.Token), _cts.Token);
+            // Start the sensor processing task
+            _ = Task.Run(() => ProcessSensorsAsync(sensors, 5, token), token);
+
+            // Start the unsend messages handling task
+            _ = Task.Run(() => _resendService.HandleUnsendMessages(30, token), token);
+
+            // Await both tasks to ensure they run concurrently
+            // await Task.WhenAll(sensorTask, resendTask);
+            await Task.Delay(500); // todo replace which tasks
         }
 
-        public void AppStopAsync()
+        public async Task AppStopAsync()
         {
             if (!_isRunning)
             {
@@ -67,10 +75,23 @@ namespace IfolorProducerService.Application.Services
                 return;
             }
 
+            // Signal cancellation
             _cts.Cancel();
 
-            _isRunning = false;
-            _logger.LogInformation("Producer stopped");
+            try
+            {
+                await Task.Delay(500); // Small delay to allow tasks to react to cancellation
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while stopping the producer.");
+            }
+            finally
+            {
+                // Ensure the state is updated even if an exception occurs
+                _isRunning = false;
+                _logger.LogInformation("Producer stopped");
+            }
         }
 
 

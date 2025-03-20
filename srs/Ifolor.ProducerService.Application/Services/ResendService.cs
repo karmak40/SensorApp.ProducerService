@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Ifolor.ProducerService.Infrastructure.Persistence;
+using IfolorProducerService.Core.Enums;
 using IfolorProducerService.Core.Services;
 using Microsoft.Extensions.Logging;
 
@@ -67,11 +68,6 @@ namespace IfolorProducerService.Application.Services
             }
         }
 
-        //private void ResendEvents(List<SensorData> eventDataList)
-        //{
-        //    eventDataList.ForEach(async ev => await _sendService.SendToMessageBroker(ev));
-        //}
-
         private async Task ResendEvents(List<SensorData> eventDataList)
         {
             var tasks = eventDataList.Select(async ev =>
@@ -79,6 +75,10 @@ namespace IfolorProducerService.Application.Services
                 try
                 {
                     await _sendService.SendToMessageBroker(ev);
+
+                    ev.EventStatus = EventStatus.Send;
+                    await _eventRepository.UpdateEventStatusAsync(ev.EventId, EventStatus.Send);
+
                     _logger.LogInformation("Resent event {EventId} for sensor {SensorId}", ev.EventId, ev.SensorId);
                 }
                 catch (Exception ex)

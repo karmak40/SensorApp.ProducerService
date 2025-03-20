@@ -65,7 +65,7 @@ namespace Ifolor.ProducerService.Tests
         }
 
         [Fact]
-        public void AppStartAsync_SetsIsRunningToTrue()
+        public async Task AppStartAsync_SetsIsRunningToTrue()
         {
             // Arrange
             var sensors = new List<Sensor>
@@ -81,20 +81,20 @@ namespace Ifolor.ProducerService.Tests
             _sensorServiceMock.Setup(x => x.GetSensors()).Returns(sensors);
 
             // Act
-            _controlService.AppStartAsync();
+            await _controlService.AppStartAsync();
 
             // Assert
             Assert.True(_controlService.IsRunning);
         }
 
         [Fact]
-        public void AppStopAsync_SetsIsRunningToFalse()
+        public async Task AppStopAsync_SetsIsRunningToFalse()
         {
             // Arrange
-            _controlService.AppStartAsync();
+            await _controlService.AppStartAsync();
 
             // Act
-            _controlService.AppStopAsync();
+            await _controlService.AppStopAsync();
 
             // Assert
             Assert.False(_controlService.IsRunning);

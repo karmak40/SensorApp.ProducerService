@@ -56,6 +56,44 @@ namespace Ifolor.ProducerService.Infrastructure.Persistence
             }
         }
 
+        public async Task UpdateEventStatusAsync(Guid eventId, EventStatus newStatus)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+
+                // Find the event by EventId
+                var eventToUpdate = await context.SensorData
+                    .FirstOrDefaultAsync(e => e.EventId == eventId);
+
+                if (eventToUpdate != null)
+                {
+                    // Update the EventStatus
+                    eventToUpdate.EventStatus = newStatus;
+
+                    // Save changes to the database
+                    await context.SaveChangesAsync();
+
+                    _logger.LogInformation("Event {EventId} status updated to {NewStatus}.", eventId, newStatus);
+                }
+                else
+                {
+                    _logger.LogWarning("Event with ID {EventId} not found.", eventId);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Error updating status for event {EventId}", eventId);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error updating status for event {EventId}", eventId);
+                throw;
+            }
+        }
+
+
         public async Task<bool> HasNotSentMessages()
         {
             using (var context = _contextFactory.CreateDbContext())

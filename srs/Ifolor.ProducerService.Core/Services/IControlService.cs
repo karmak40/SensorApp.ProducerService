@@ -6,8 +6,8 @@ namespace IfolorProducerService.Core.Services
     public interface IControlService
     {
         bool IsRunning { get; }
-        public void AppStartAsync();
-        public void AppStopAsync();
+        Task AppStartAsync();
+        Task AppStopAsync();
         public BlockingCollection<Sensor> GetSensorQueue();
     }
 }
