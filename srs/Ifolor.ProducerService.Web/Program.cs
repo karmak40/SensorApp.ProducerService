@@ -1,12 +1,6 @@
-﻿using Ifolor.ProducerService.Core.Models;
-using Ifolor.ProducerService.Core.Services;
-using Ifolor.ProducerService.Infrastructure.Messaging;
+﻿using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
-using IfolorProducerService.Application.Generator;
-using IfolorProducerService.Application.Mapping;
-using IfolorProducerService.Application.Services;
-using IfolorProducerService.Core.Generator;
-using IfolorProducerService.Core.Services;
+using Ifolor.ProducerService.Web.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -16,17 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables(prefix: "RabbitMQ__");
 
 // Add services to the container
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSystemsServices();
 
 // Configuration
-builder.Services.Configure<RabbitMQConfig>(builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.Configure<ProducerPolicy>(builder.Configuration.GetSection("Producerpolicy"));
+builder.Services.AddConfiguration(builder.Configuration);
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-
-builder.Services.Configure<SQLiteConfig>(builder.Configuration.GetSection("SQLite"));
+// Add mapping
+builder.Services.AddAutoMapper();
 
 // SQLite
 builder.Services.AddDbContextFactory<ProducerDbContext>((serviceProvider, options) =>
@@ -36,23 +26,12 @@ builder.Services.AddDbContextFactory<ProducerDbContext>((serviceProvider, option
 });
 
 // DI
-builder.Services.AddTransient<IMessageProducer, RabbitMQProducer>();
-builder.Services.AddTransient<ISensorService, SensorService>();
-builder.Services.AddSingleton<IControlService, ControlService>();
-builder.Services.AddTransient<IEventRepository, EventRepository>();
-builder.Services.AddTransient<ISendService, SendService>();
-builder.Services.AddTransient<IResendService, ResendService>();
-builder.Services.AddTransient<ISensorDataGenerator, SensorDataGenerator>();
-builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
-
+builder.Services.AddDunkelverarbeitungs();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-
 app.UseSwagger();
 app.UseSwaggerUI();
-
 
 app.MapControllers();
 
