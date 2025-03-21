@@ -1,4 +1,5 @@
-﻿using IfolorProducerService.Application.Services;
+﻿using Ifolor.ProducerService.Core.Services;
+using IfolorProducerService.Application.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;

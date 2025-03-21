@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Ifolor.ProducerService.Infrastructure.Persistence;
+using Ifolor.ProducerService.Core.Models;
 using IfolorProducerService.Core.Enums;
 using IfolorProducerService.Core.Services;
 using Microsoft.Extensions.Logging;

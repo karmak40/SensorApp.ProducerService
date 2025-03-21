@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using Ifolor.ProducerService.Core.Models;
+using Ifolor.ProducerService.Core.Services;
 using Ifolor.ProducerService.Infrastructure.Messaging;
-using Ifolor.ProducerService.Infrastructure.Persistence;
 using IfolorProducerService.Application.Generator;
 using IfolorProducerService.Application.Services;
 using IfolorProducerService.Core.Enums;
@@ -81,23 +82,37 @@ namespace Ifolor.ProducerService.Tests
             _sensorServiceMock.Setup(x => x.GetSensors()).Returns(sensors);
 
             // Act
-            await _controlService.AppStartAsync();
+            _controlService.AppStartAsync();
 
             // Assert
             Assert.True(_controlService.IsRunning);
+            await _controlService.AppStopAsync();
         }
 
         [Fact]
         public async Task AppStopAsync_SetsIsRunningToFalse()
         {
+            var sensors = new List<Sensor>
+                {
+                    new Sensor
+                    {
+                        SensorId = "1",
+                        Interval = 2,
+                        MeasurementType = MeasurementType.Temperature,
+                        GenerateData = () => GenerateSensorData(5)
+                    }
+                };
+            _sensorServiceMock.Setup(x => x.GetSensors()).Returns(sensors);
+
             // Arrange
-            await _controlService.AppStartAsync();
+            _controlService.AppStartAsync();
 
             // Act
             await _controlService.AppStopAsync();
 
             // Assert
             Assert.False(_controlService.IsRunning);
+            await _controlService.AppStopAsync();
         }
     }
 }

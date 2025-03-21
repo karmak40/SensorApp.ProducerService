@@ -1,7 +1,7 @@
 ﻿using IfolorProducerService.Application.Services;
 using IfolorProducerService.Core.Enums;
 
-namespace Ifolor.ProducerService.Infrastructure.Persistence
+namespace Ifolor.ProducerService.Core.Models
 {
     public interface IEventRepository
     {

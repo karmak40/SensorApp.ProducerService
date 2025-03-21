@@ -1,4 +1,4 @@
-﻿using Ifolor.ProducerService.Infrastructure.Messaging;
+﻿using Ifolor.ProducerService.Core.Services;
 using IfolorProducerService.Core.Enums;
 using IfolorProducerService.Core.Services;
 using Microsoft.Extensions.Logging;

@@ -1,6 +1,6 @@
 ﻿using IfolorProducerService.Application.Services;
 
-namespace Ifolor.ProducerService.Infrastructure.Messaging
+namespace Ifolor.ProducerService.Core.Services
 {
     public interface IMessageProducer
     {

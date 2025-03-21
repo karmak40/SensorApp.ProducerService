@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -20,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ifolor.ProducerService.Core\Ifolor.ProducerService.Core.csproj" />
     <ProjectReference Include="..\Ifolor.ProducerService.Infrastructure\Ifolor.ProducerService.Infrastructure.csproj" />
   </ItemGroup>
 

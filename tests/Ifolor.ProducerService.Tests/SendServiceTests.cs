@@ -1,3 +1,4 @@
+using Ifolor.ProducerService.Core.Services;
 using Ifolor.ProducerService.Infrastructure.Messaging;
 using IfolorProducerService.Application.Services;
 using IfolorProducerService.Core.Enums;

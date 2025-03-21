@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using Ifolor.ProducerService.Core.Models;
+using Ifolor.ProducerService.Core.Services;
 using Ifolor.ProducerService.Infrastructure.Messaging;
-using Ifolor.ProducerService.Infrastructure.Persistence;
 using IfolorProducerService.Core.Generator;
 using IfolorProducerService.Core.Models;
 using IfolorProducerService.Core.Services;
@@ -56,15 +57,16 @@ namespace IfolorProducerService.Application.Services
 
             _logger.LogInformation("Producer started");
 
+            if (sensors == null) { return; }
+
             // Start the sensor processing task
-            _ = Task.Run(() => ProcessSensorsAsync(sensors, 5, token), token);
+            var sensorTask = Task.Run(() => ProcessSensorsAsync(sensors, 5, token), token);
 
             // Start the unsend messages handling task
-            _ = Task.Run(() => _resendService.HandleUnsendMessages(30, token), token);
+            var resendTask = Task.Run(() => _resendService.HandleUnsendMessages(30, token), token);
 
             // Await both tasks to ensure they run concurrently
-            // await Task.WhenAll(sensorTask, resendTask);
-            await Task.Delay(500); // todo replace which tasks
+            await Task.WhenAll(sensorTask, resendTask);
         }
 
         public async Task AppStopAsync()

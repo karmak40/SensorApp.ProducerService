@@ -1,4 +1,6 @@
-﻿using Ifolor.ProducerService.Infrastructure.Messaging;
+﻿using Ifolor.ProducerService.Core.Models;
+using Ifolor.ProducerService.Core.Services;
+using Ifolor.ProducerService.Infrastructure.Messaging;
 using Ifolor.ProducerService.Infrastructure.Persistence;
 using IfolorProducerService.Application.Generator;
 using IfolorProducerService.Application.Mapping;
