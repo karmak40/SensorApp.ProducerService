@@ -3,7 +3,7 @@
 ## Usage
 
 ```bash
-cd Ifolor.ProducerService
+cd ProducerService
 docker compose up
 ```
 
