@@ -1,4 +1,4 @@
-# Ifolor.ProducerService
+# ProducerService
 
 ## Usage
 
